@@ -10,13 +10,17 @@ import mediapipe as mp
 from collections import deque
 import random
 import time
+import logging
+
+# Suppress ScriptRunContext warnings from streamlit-webrtc
+logging.getLogger("streamlit.runtime.scriptrunner_utils.script_run_context").setLevel(logging.ERROR)
 
 class ImprovedHandDetector(VideoProcessorBase):
     def __init__(self):
         self.mp_hands = mp.solutions.hands
         self.mp_drawing = mp.solutions.drawing_utils
         self.hands = self.mp_hands.Hands(
-            max_num_hands=1,
+            max_num_hands=2,
             min_detection_confidence=0.7,
             min_tracking_confidence=0.7
         )
@@ -183,7 +187,7 @@ class ImprovedHandDetector(VideoProcessorBase):
             index_up = self.is_finger_extended(points, 8, 6, 5)
             middle_up = self.is_finger_extended(points, 12, 10, 9)
             
-            if index_up and middle_up and index_middle_dist < 100:
+            if index_up and middle_up and (index_middle_dist < 100 and index_middle_dist > 40) :
                 return "CISEAUX ✌️", 0.9
             else:
                 return "??? 🤔", 0.5
@@ -375,6 +379,8 @@ if 'player_score' not in st.session_state:
     st.session_state.player_score = 0
 if 'computer_score' not in st.session_state:
     st.session_state.computer_score = 0
+if 'game_counter' not in st.session_state:
+    st.session_state.game_counter = 0
 
 # Afficher le score
 col1, col2 = st.columns(2)
@@ -404,7 +410,7 @@ else:
 st.write("---")
 
 # Stream video
-ctx = webrtc_streamer(key="hand-game", video_processor_factory=ImprovedHandDetector)
+ctx = webrtc_streamer(key=f"hand-game-{st.session_state.game_counter}", video_processor_factory=ImprovedHandDetector)
 
 st.write("---")
 
@@ -413,4 +419,5 @@ if ft5_finished:
     if st.button("Nouvelle Partie", type="primary", use_container_width=True, key="new_game_btn"):
         st.session_state.player_score = 0
         st.session_state.computer_score = 0
+        st.session_state.game_counter += 1
         st.rerun()
