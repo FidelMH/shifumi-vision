@@ -408,19 +408,9 @@ ctx = webrtc_streamer(key="hand-game", video_processor_factory=ImprovedHandDetec
 
 st.write("---")
 
-# Bouton Nouvelle Partie (toujours affiche mais seulement actif si FT5 termine)
+# Bouton Nouvelle Partie (seulement visible si FT5 termine)
 if ft5_finished:
     if st.button("Nouvelle Partie", type="primary", use_container_width=True, key="new_game_btn"):
         st.session_state.player_score = 0
         st.session_state.computer_score = 0
         st.rerun()
-else:
-    # Afficher un placeholder quand la partie n'est pas terminee
-    st.button("Nouvelle Partie", type="primary", use_container_width=True, disabled=True, key="new_game_btn_disabled")
-    st.caption("Le bouton s'activera quand un joueur atteindra 5 victoires")
-
-# Auto-refresh pour detecter la fin de partie
-if not ft5_finished:
-    import time as time_module
-    time_module.sleep(1)
-    st.rerun()
