@@ -63,4 +63,4 @@ jobs:
         with:
           app-name: 'shifumi-fidel'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6E0A0A4E938146069441E64C94A20BED }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_23953C47E9AB4866998E75774064DFFA }}
